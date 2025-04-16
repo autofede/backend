@@ -281,7 +281,7 @@ INSERT INTO question_option (question_id, option_text, sequence_number, is_other
 VALUES
 (55, 'Headquarters', 1, FALSE),
 (55, 'Branch office', 2, FALSE),
-(55, 'Remote/Work from home', 3, FALSE),
+(55, 'Remote or Work from home', 3, FALSE),
 (55, 'Hybrid', 4, FALSE),
 (55, 'Other', 5, TRUE);
 
@@ -293,12 +293,12 @@ VALUES
 -- add survey logic for survey1
 -- 1. Skip in-depth product usage questions for first-time users
 -- If respondent selects "This is my first time" for product usage frequency, skip to question 30
-(1, 5, 7, 'skip_to', 30),
+(1, 5, 24, 'skip_to', 30),
 
 -- add survey logic for survey2
 -- 1. Skip workplace environment questions for remote workers
 -- If work location is "Remote/Work from home", skip to remote work experience questions
-(2, 55, 3, 'skip_to', 65);
+(2, 55, 61, 'skip_to', 65);
 
 
 /*

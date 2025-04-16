@@ -53,8 +53,8 @@ BEGIN
         
         -- Apply skip logic for Survey 1
         
-        -- Skip logic 1: If respondent selects "This is my first time" for product usage frequency (option 7), skip to question 30
-        IF usage_option != 7 THEN
+        -- Skip logic 1: If respondent selects "This is my first time" for product usage frequency (option_id = 24), skip to question 30
+        IF usage_option != 24 THEN
             -- Product ratings (questions 6-20)
             -- Skip ratings for users who haven't used the product (usage_option = 1 means "Never used")
             IF usage_option != 1 THEN
@@ -82,10 +82,10 @@ BEGIN
                 INSERT INTO answer (response_id, question_id, option_id)
                 VALUES 
                 (response_id_var, 21, 1 + FLOOR(RAND() * 8));
-            END IF;
-            
-            -- Skip questions 22-30 for respondents with education_option = 1 (No formal education)
-            IF education_option != 1 THEN
+           --  END IF;
+--             
+--             -- Skip questions 22-30 for respondents with education_option = 1 (No formal education)
+--             IF education_option != 1 THEN
                 INSERT INTO answer (response_id, question_id, text_answer)
                 VALUES 
                 (response_id_var, 22, CONCAT('Answer for question 22 from respondent ', i)),
@@ -126,21 +126,30 @@ BEGIN
 		(response_id_var, 45, CONCAT('Overall great experience with your company. Looking forward to seeing new products in the future!'));
 		
 		-- NPS score (question 46) only for respondents who used the product
-		IF usage_option != 1 THEN
-			SET nps_score_var = FLOOR(RAND() * 11);
-			INSERT INTO answer (response_id, question_id, numerical_answer)
-			VALUES (response_id_var, 46, nps_score_var);
-			
-			-- Follow-up based on NPS score
-			IF nps_score_var < 9 THEN
-				INSERT INTO answer (response_id, question_id, text_answer)
-				VALUES (response_id_var, 47, 'I would need to see better customer service and faster resolution of issues.');
-			ELSE
-				INSERT INTO answer (response_id, question_id, text_answer)
-				VALUES (response_id_var, 48, 'Your exceptional product quality and customer service made me give this high rating.');
-			END IF;
-		END IF;
+	-- 	IF usage_option != 1 THEN
+-- 			SET nps_score_var = FLOOR(RAND() * 11);
+-- 			INSERT INTO answer (response_id, question_id, numerical_answer)
+-- 			VALUES (response_id_var, 46, nps_score_var);
+-- 			
+-- 			-- Follow-up based on NPS score
+-- 			IF nps_score_var < 9 THEN
+-- 				INSERT INTO answer (response_id, question_id, text_answer)
+-- 				VALUES (response_id_var, 47, 'I would need to see better customer service and faster resolution of issues.');
+-- 			ELSE
+-- 				INSERT INTO answer (response_id, question_id, text_answer)
+-- 				VALUES (response_id_var, 48, 'Your exceptional product quality and customer service made me give this high rating.');
+-- 			END IF;
+-- 		END IF;
+        
+		SET nps_score_var = FLOOR(RAND() * 11);
+		INSERT INTO answer (response_id, question_id, numerical_answer) VALUES (response_id_var, 46, nps_score_var);
 		
+		INSERT INTO answer (response_id, question_id, text_answer)
+		VALUES (response_id_var, 47, 'I would need to see better customer service and faster resolution of issues.');
+	
+		INSERT INTO answer (response_id, question_id, text_answer)
+		VALUES (response_id_var, 48, 'Your exceptional product quality and customer service made me give this high rating.');
+
 		-- Question 49 for those who didn't skip
 		INSERT INTO answer (response_id, question_id, text_answer)
 		VALUES (response_id_var, 49, CONCAT('Additional feedback about products from respondent ', i));
@@ -220,8 +229,8 @@ BEGIN
         
         -- Apply skip logic for Survey 2
         
-        -- Skip logic 1: If work location is "Remote/Work from home" (option 3), skip to question 65
-        IF location_option != 3 THEN
+        -- Skip logic 1: If work location is "Remote/Work from home" (option_id = 61), skip to question 65
+        IF location_option != 61 THEN
             -- Product satisfaction ratings (questions 56-64)
             SET rating_var = 1 + FLOOR(RAND() * 5);
             
@@ -265,21 +274,21 @@ BEGIN
         (response_id_var, 71, CONCAT('Mobile app feedback from respondent ', i + 1000));
         
         -- Conditionally add feedback based on job level
-        IF job_level_option = 1 THEN
+--         IF job_level_option = 1 THEN
             -- Entry level feedback (questions 72-74)
-            INSERT INTO answer (response_id, question_id, text_answer)
-            VALUES 
-            (response_id_var, 72, CONCAT('I enjoyed using your product because it solves my problem efficiently and has an intuitive interface.')),
-            (response_id_var, 73, CONCAT('The delivery service could be improved by providing more accurate tracking information.')),
-            (response_id_var, 74, CONCAT('I would recommend adding more payment options and improving the checkout process.'));
-        ELSE
+		INSERT INTO answer (response_id, question_id, text_answer)
+		VALUES 
+		(response_id_var, 72, CONCAT('I enjoyed using your product because it solves my problem efficiently and has an intuitive interface.')),
+		(response_id_var, 73, CONCAT('The delivery service could be improved by providing more accurate tracking information.')),
+		(response_id_var, 74, CONCAT('I would recommend adding more payment options and improving the checkout process.'));
+   --  ELSE
             -- Management feedback (questions 72-74) - only for non-entry level
-            INSERT INTO answer (response_id, question_id, text_answer)
-            VALUES 
-            (response_id_var, 72, CONCAT('Management feedback from higher-level respondent ', i + 1000)),
-            (response_id_var, 73, CONCAT('Leadership assessment from higher-level respondent ', i + 1000)),
-            (response_id_var, 74, CONCAT('Organizational structure feedback from higher-level respondent ', i + 1000));
-        END IF;
+		INSERT INTO answer (response_id, question_id, text_answer)
+		VALUES 
+		(response_id_var, 72, CONCAT('Management feedback from higher-level respondent ', i + 1000)),
+		(response_id_var, 73, CONCAT('Leadership assessment from higher-level respondent ', i + 1000)),
+		(response_id_var, 74, CONCAT('Organizational structure feedback from higher-level respondent ', i + 1000));
+   --  END IF;
         
         -- Questions 75-76 for everyone (after potential skip)
         INSERT INTO answer (response_id, question_id, text_answer)
@@ -293,14 +302,19 @@ BEGIN
         VALUES (response_id_var, 77, satisfaction_var);
         
         -- Follow-up based on satisfaction score
-        IF satisfaction_var < 7 THEN
-            INSERT INTO answer (response_id, question_id, text_answer)
-            VALUES (response_id_var, 78, 'To improve my satisfaction, I would like to see better product quality and faster shipping options.');
-        ELSE
-            INSERT INTO answer (response_id, question_id, text_answer)
-            VALUES (response_id_var, 79, 'I gave a high rating because the product exceeded my expectations and the customer service was excellent.');
-        END IF;
+--         IF satisfaction_var < 7 THEN
+--             INSERT INTO answer (response_id, question_id, text_answer)
+--             VALUES (response_id_var, 78, 'To improve my satisfaction, I would like to see better product quality and faster shipping options.');
+--         ELSE
+--             INSERT INTO answer (response_id, question_id, text_answer)
+--             VALUES (response_id_var, 79, 'I gave a high rating because the product exceeded my expectations and the customer service was excellent.');
+--         END IF;
         
+		INSERT INTO answer (response_id, question_id, text_answer)
+		VALUES (response_id_var, 78, 'To improve my satisfaction, I would like to see better product quality and faster shipping options.');
+		INSERT INTO answer (response_id, question_id, text_answer)
+		VALUES (response_id_var, 79, 'I gave a high rating because the product exceeded my expectations and the customer service was excellent.');
+	
         -- Additional feedback for everyone
         INSERT INTO answer (response_id, question_id, text_answer)
         VALUES 
@@ -330,14 +344,19 @@ BEGIN
         VALUES (response_id_var, 86, recommendation_var);
         
         -- Question 87-88: Sharing based on recommendation score
-        IF recommendation_var >= 9 THEN
-            INSERT INTO answer (response_id, question_id, text_answer)
-            VALUES (response_id_var, 87, CONCAT('I would recommend your product because it has exceptional quality and reliable performance.'));
-        ELSE
-            INSERT INTO answer (response_id, question_id, text_answer)
-            VALUES (response_id_var, 88, CONCAT('I would be more likely to recommend if you improved the pricing and added more customization options.'));
-        END IF;
+--         IF recommendation_var >= 9 THEN
+--             INSERT INTO answer (response_id, question_id, text_answer)
+--             VALUES (response_id_var, 87, CONCAT('I would recommend your product because it has exceptional quality and reliable performance.'));
+--         ELSE
+--             INSERT INTO answer (response_id, question_id, text_answer)
+--             VALUES (response_id_var, 88, CONCAT('I would be more likely to recommend if you improved the pricing and added more customization options.'));
+--         END IF;
         
+		INSERT INTO answer (response_id, question_id, text_answer)
+		VALUES (response_id_var, 87, CONCAT('I would recommend your product because it has exceptional quality and reliable performance.'));
+		INSERT INTO answer (response_id, question_id, text_answer)
+		VALUES (response_id_var, 88, CONCAT('I would be more likely to recommend if you improved the pricing and added more customization options.'));
+	
         -- Question 89: Preferred communication channel (option-based)
         INSERT INTO answer (response_id, question_id, option_id)
         VALUES (response_id_var, 89, 1 + FLOOR(RAND() * 5));
